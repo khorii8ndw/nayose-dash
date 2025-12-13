@@ -1,0 +1,4 @@
+# Dash 2.x + DMC 0.12系 (React 16互換)
+dash>=2.14.0,<3.0.0
+dash-mantine-components>=0.12.0,<0.13.0
+dash-iconify>=0.1.2

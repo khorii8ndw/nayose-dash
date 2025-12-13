@@ -1,0 +1,66 @@
+/*
+ * レイアウト設定
+ * 注: Header height, Navbar width は DMC 0.12系の制約でPython側(config.py)でも指定必須
+ *     値を変更する場合は config.py と同期すること
+ */
+
+/* Header - height は config.py で指定 */
+.app-header {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+}
+
+/* Navbar - width は config.py で指定 */
+.app-navbar {
+    padding: 16px;
+}
+
+/* NavLink */
+.app-navlink {
+    margin-bottom: 4px;
+}
+
+/* Page content */
+.page-content {
+    padding: 24px;
+}
+
+/* Card */
+.input-card {
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+/* Upload area */
+.upload-area {
+    width: 100%;
+    height: 120px;
+    border-width: 2px;
+    border-style: dashed;
+    border-radius: 8px;
+    border-color: #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Button full width */
+.btn-full {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+/* Result area */
+.result-area {
+    padding: 16px;
+}
+
+/* Two column grid */
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
