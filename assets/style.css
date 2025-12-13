@@ -1,66 +1,644 @@
 /*
- * レイアウト設定
- * 注: Header height, Navbar width は DMC 0.12系の制約でPython側(config.py)でも指定必須
- *     値を変更する場合は config.py と同期すること
+ * 名寄せ承認UI - スタイルシート
+ * 
+ * 命名規則: BEM風 (Block__Element--Modifier)
+ * カラーパレット: Open Color (https://yeun.github.io/open-color/)
  */
 
-/* Header - height は config.py で指定 */
+/* ========================================
+   CSS Variables (Design Tokens)
+   ======================================== */
+:root {
+  /* Colors - Neutral */
+  --color-gray-0: #f8f9fa;
+  --color-gray-1: #f1f3f5;
+  --color-gray-2: #e9ecef;
+  --color-gray-3: #dee2e6;
+  --color-gray-4: #ced4da;
+  --color-gray-5: #adb5bd;
+  --color-gray-6: #868e96;
+  --color-gray-7: #495057;
+  --color-gray-8: #343a40;
+  --color-gray-9: #212529;
+
+  /* Colors - Primary (Blue) */
+  --color-blue-0: #e7f5ff;
+  --color-blue-1: #d0ebff;
+  --color-blue-2: #a5d8ff;
+  --color-blue-5: #339af0;
+  --color-blue-6: #228be6;
+  --color-blue-7: #1c7ed6;
+  --color-blue-8: #1971c2;
+
+  /* Colors - Semantic */
+  --color-red-0: #fff5f5;
+  --color-red-2: #ffc9c9;
+  --color-red-7: #f03e3e;
+  --color-red-8: #e03131;
+  --color-red-9: #c92a2a;
+
+  --color-amber-0: #fff9db;
+  --color-amber-2: #ffe066;
+  --color-amber-7: #f59f00;
+  --color-amber-8: #f08c00;
+  --color-amber-9: #e67700;
+
+  --color-green-0: #ebfbee;
+  --color-green-2: #b2f2bb;
+  --color-green-7: #37b24d;
+  --color-green-8: #2f9e44;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-md: 13px;
+  --font-size-base: 14px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* Z-Index */
+  --z-sticky: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+
+/* ========================================
+   Base / Reset
+   ======================================== */
+* {
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   Layout
+   ======================================== */
 .app-header {
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
 }
 
-/* Navbar - width は config.py で指定 */
 .app-navbar {
-    padding: 16px;
+  padding: var(--space-lg);
 }
 
-/* NavLink */
 .app-navlink {
-    margin-bottom: 4px;
+  margin-bottom: var(--space-xs);
 }
 
-/* Page content */
+.page-title {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-xl) var(--space-xl) 0;
+}
+
+.page-title__main {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-9);
+  margin: 0 0 var(--space-xs);
+}
+
+.page-title__sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.two-pane {
+  display: flex !important;
+  flex-direction: row !important;
+  padding: 0 var(--space-xl);
+  padding-bottom: 80px; /* 承認バー分 */
+  width: 100%;
+}
+
+.two-pane__left {
+  width: 40%;
+  min-width: 40%;
+  flex: 0 0 40%;
+  padding-right: var(--space-md);
+}
+
+.two-pane__right {
+  width: 60%;
+  min-width: 60%;
+  flex: 0 0 60%;
+  padding-left: var(--space-md);
+}
+
+
+/* ========================================
+   Components - Badge
+   ======================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-full);
+  border: 1px solid;
+  padding: 2px var(--space-sm);
+  font-size: var(--font-size-sm);
+  margin-right: var(--space-xs);
+  white-space: nowrap;
+}
+
+.badge--gray {
+  background-color: var(--color-gray-0);
+  color: var(--color-gray-7);
+  border-color: var(--color-gray-3);
+}
+
+.badge--blue {
+  background-color: var(--color-blue-0);
+  color: var(--color-blue-8);
+  border-color: var(--color-blue-2);
+}
+
+.badge--red {
+  background-color: var(--color-red-0);
+  color: var(--color-red-9);
+  border-color: var(--color-red-2);
+}
+
+.badge--amber {
+  background-color: var(--color-amber-0);
+  color: var(--color-amber-9);
+  border-color: var(--color-amber-2);
+}
+
+.badge--green {
+  background-color: var(--color-green-0);
+  color: var(--color-green-8);
+  border-color: var(--color-green-2);
+}
+
+
+/* ========================================
+   Components - Key Chip
+   ======================================== */
+.key-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.key-chip {
+  display: inline-block;
+  background-color: var(--color-gray-1);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-sm);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+  color: var(--color-gray-7);
+}
+
+
+/* ========================================
+   Components - Section Card
+   ======================================== */
+.section-card {
+  background: white;
+  border: 1px solid var(--color-gray-3);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.section-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-gray-3);
+}
+
+.section-card__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-gray-9);
+}
+
+.section-card__body {
+  padding: var(--space-lg);
+}
+
+
+/* ========================================
+   Components - Data Table
+   ======================================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-gray-7);
+  background-color: var(--color-gray-0);
+  text-align: left;
+}
+
+.data-table td {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  border-top: 1px solid var(--color-gray-3);
+}
+
+.data-table__row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.data-table__row:hover {
+  background-color: var(--color-gray-0);
+}
+
+.data-table__row--selected {
+  background-color: var(--color-blue-0) !important;
+}
+
+.data-table__cell--mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+
+/* ========================================
+   Components - Member Card
+   ======================================== */
+.member-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-3);
+  margin-bottom: var(--space-sm);
+  background: white;
+  transition: opacity 0.15s ease;
+}
+
+.member-card--constrained {
+  background: var(--color-gray-0);
+  opacity: 0.6;
+}
+
+.member-card__main {
+  display: flex;
+  flex: 1;
+  gap: var(--space-lg);
+}
+
+.member-card__info {
+  min-width: 200px;
+}
+
+.member-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: flex-start;
+}
+
+.member-card__actions {
+  margin-left: var(--space-lg);
+}
+
+
+/* ========================================
+   Components - Attribute Pill
+   ======================================== */
+.attr-group {
+  margin-bottom: var(--space-lg);
+}
+
+.attr-group__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.attr-group__label-text {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-gray-8);
+}
+
+.attr-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.attr-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-3);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  background: white;
+  transition: all 0.15s ease;
+}
+
+.attr-pill:hover {
+  border-color: var(--color-gray-4);
+}
+
+.attr-pill--selected {
+  background: var(--color-blue-6);
+  color: white;
+  border-color: var(--color-blue-6);
+}
+
+.attr-pill--shared {
+  border-color: var(--color-red-2);
+  color: var(--color-red-9);
+}
+
+.attr-pill__meta {
+  margin-left: var(--space-sm);
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+}
+
+
+/* ========================================
+   Components - History Timeline
+   ======================================== */
+.history-item {
+  display: flex;
+  margin-bottom: var(--space-md);
+}
+
+.history-item__marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray-5);
+  margin-top: 6px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+}
+
+.history-item__content {
+  flex: 1;
+}
+
+.history-item__header {
+  font-size: var(--font-size-md);
+  color: var(--color-gray-7);
+}
+
+.history-item__event {
+  font-weight: 500;
+  color: var(--color-gray-9);
+}
+
+.history-item__by {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.history-item__note {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+  margin-top: 2px;
+}
+
+
+/* ========================================
+   Components - Approval Bar
+   ======================================== */
+.approval-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--color-gray-3);
+  padding: var(--space-md) var(--space-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: var(--z-sticky);
+}
+
+.approval-bar__info {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-7);
+}
+
+.approval-bar__cluster-id {
+  font-family: var(--font-mono);
+  margin-right: var(--space-md);
+}
+
+.approval-bar__actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+
+/* ========================================
+   Components - Toast
+   ======================================== */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  right: var(--space-xl);
+  background: var(--color-gray-9);
+  color: white;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-toast);
+}
+
+.toast__message {
+  margin-right: var(--space-md);
+}
+
+.toast__hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-5);
+}
+
+
+/* ========================================
+   Components - Diff Banner
+   ======================================== */
+.diff-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diff-banner__content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.diff-banner__label {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  margin-right: var(--space-md);
+}
+
+.diff-banner__meta {
+  margin-left: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+
+/* ========================================
+   Components - Preview Block
+   ======================================== */
+.preview-block {
+  margin-top: var(--space-md);
+}
+
+.preview-block__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-6);
+  margin-bottom: var(--space-xs);
+}
+
+.preview-block__item {
+  font-size: var(--font-size-md);
+  color: var(--color-gray-9);
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   Components - Rep Info
+   ======================================== */
+.rep-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.rep-info__main {
+  flex: 1;
+}
+
+.rep-info__side {
+  text-align: right;
+}
+
+.rep-info__reason {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-7);
+  margin-top: var(--space-sm);
+}
+
+.rep-info__score {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+  margin-top: var(--space-xs);
+}
+
+
+/* ========================================
+   Utilities
+   ======================================== */
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.text-muted {
+  color: var(--color-gray-6);
+}
+
+.text-dimmed {
+  color: var(--color-gray-5);
+}
+
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.ml-sm { margin-left: var(--space-sm); }
+.mr-md { margin-right: var(--space-md); }
+
+
+/* ========================================
+   Legacy / Batch Page Support
+   ======================================== */
 .page-content {
-    padding: 24px;
+  padding: var(--space-xl);
 }
 
-/* Card */
 .input-card {
-    padding: 16px;
-    margin-bottom: 16px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
 }
 
-/* Upload area */
 .upload-area {
-    width: 100%;
-    height: 120px;
-    border-width: 2px;
-    border-style: dashed;
-    border-radius: 8px;
-    border-color: #dee2e6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  width: 100%;
+  height: 120px;
+  border: 2px dashed var(--color-gray-3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-/* Button full width */
 .btn-full {
-    width: 100%;
-    margin-bottom: 16px;
+  width: 100%;
+  margin-bottom: var(--space-lg);
 }
 
-/* Result area */
 .result-area {
-    padding: 16px;
+  padding: var(--space-lg);
 }
 
-/* Two column grid */
-.two-column {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+/* Legacy hover support */
+.table-row-hover:hover {
+  background-color: var(--color-gray-0);
+}
+
+.table-row-hover td {
+  border-top: 1px solid var(--color-gray-3);
 }
