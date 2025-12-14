@@ -1,6 +1,6 @@
 """
 レビュー一覧 - クラスタ一覧とフィルタ
-リファクタリング版: インラインスタイルを排除し、CSSクラスを使用
+Step 1 改善: 確認サマリを追加
 """
 
 import dash
@@ -69,6 +69,67 @@ DETAILS = {
 
 
 # ========================================
+# Helper Functions
+# ========================================
+
+def analyze_cluster(detail):
+    """クラスタを分析して確認ポイントを抽出"""
+    checks = []
+    warnings = []
+    
+    diff = detail["diff"]
+    
+    # 代表変更チェック
+    if diff["rep_changed"]:
+        warnings.append({"type": "rep_changed", "label": "代表レコードが変更されています", "detail": "前回承認時と異なる代表が選定されました"})
+    else:
+        checks.append({"type": "rep_ok", "label": "代表レコード：変更なし"})
+    
+    # 構成員変更チェック
+    added = diff.get("added", 0)
+    removed = diff.get("removed", 0)
+    if removed > 0:
+        warnings.append({"type": "member_removed", "label": f"構成員：{removed}件が削除されました", "detail": "cannot制約等により除外"})
+    if added > 0:
+        checks.append({"type": "member_added", "label": f"構成員：+{added}件（新規追加）"})
+    if added == 0 and removed == 0:
+        checks.append({"type": "member_ok", "label": "構成員：変更なし"})
+    
+    # 属性チェック（共有値・複数候補）
+    attrs = detail.get("attrs", {})
+    attr_warnings = []
+    for attr_name, items in attrs.items():
+        attr_label = {"name": "氏名", "phone": "電話", "email": "メール", "address": "住所"}.get(attr_name, attr_name)
+        
+        # 共有値チェック
+        has_shared = any(it.get("shared") for it in items)
+        if has_shared:
+            attr_warnings.append(f"「{attr_label}」に共有値あり")
+        
+        # 複数候補チェック
+        if len(items) > 1:
+            attr_warnings.append(f"「{attr_label}」に複数候補（{len(items)}件）")
+        
+        # 信頼度低チェック
+        low_trust = any(it.get("trust", 1) < 0.7 for it in items)
+        if low_trust:
+            attr_warnings.append(f"「{attr_label}」に低信頼度の値あり")
+    
+    if attr_warnings:
+        warnings.append({"type": "attr_attention", "label": "属性の確認が必要", "detail": "、".join(attr_warnings)})
+    else:
+        checks.append({"type": "attr_ok", "label": "属性：問題なし"})
+    
+    # constraint（cannot）チェック
+    members = detail.get("members", [])
+    constrained = [m for m in members if m.get("constraint")]
+    if constrained:
+        warnings.append({"type": "constraint", "label": f"cannot制約あり（{len(constrained)}件）", "detail": "結合禁止の制約が適用されています"})
+    
+    return checks, warnings
+
+
+# ========================================
 # UI Components
 # ========================================
 
@@ -103,6 +164,47 @@ def SectionCard(title, children, right=None, title_extra=None):
         ], className="section-card__header"),
         html.Div(children, className="section-card__body"),
     ], className="section-card")
+
+
+def CheckSummary(checks, warnings):
+    """確認サマリコンポーネント"""
+    # 全体の状態を判定
+    if not warnings:
+        status = "ok"
+        status_text = "問題なし — このまま承認できます"
+        status_class = "check-summary--ok"
+    else:
+        status = "attention"
+        status_text = f"{len(warnings)}件の確認が必要です"
+        status_class = "check-summary--attention"
+    
+    # チェック項目のリスト
+    check_items = []
+    for c in checks:
+        check_items.append(
+            html.Div([
+                html.Span("✓", className="check-summary__icon check-summary__icon--ok"),
+                html.Span(c["label"], className="check-summary__label"),
+            ], className="check-summary__item")
+        )
+    
+    for w in warnings:
+        check_items.append(
+            html.Div([
+                html.Span("⚠", className="check-summary__icon check-summary__icon--warn"),
+                html.Span(w["label"], className="check-summary__label check-summary__label--warn"),
+                html.Span(w.get("detail", ""), className="check-summary__detail") if w.get("detail") else None,
+            ], className="check-summary__item check-summary__item--warn")
+        )
+    
+    return html.Div([
+        html.Div([
+            html.Span("📋", className="check-summary__header-icon"),
+            html.Span("確認サマリ", className="check-summary__header-title"),
+            html.Span(status_text, className=f"check-summary__status check-summary__status--{status}"),
+        ], className="check-summary__header"),
+        html.Div(check_items, className="check-summary__body"),
+    ], className=f"check-summary {status_class}")
 
 
 def MemberCard(member, index):
@@ -245,7 +347,13 @@ def DetailPanel(cluster_id):
     diff = d["diff"]
     winner = d["rep_candidates"][0]
     
+    # 確認サマリを生成
+    checks, warnings = analyze_cluster(d)
+    
     return html.Div([
+        # 確認サマリ（NEW）
+        CheckSummary(checks, warnings),
+        
         # 差分バナー
         dmc.Paper(withBorder=True, radius="md", p="sm", mb="md", children=[
             html.Div([
@@ -495,7 +603,6 @@ def handle_cannot(btn_clicks, cancel, submit, o):
     if t in ("cannot-cancel", "cannot-submit"):
         return False, "", None
     if isinstance(t, dict) and t.get("type") == "btn-cannot":
-        # 実際にクリックされたか確認（n_clicksがNoneや0でないこと）
         if any(c for c in btn_clicks if c):
             return True, f"レコード: {t['pk']}", t["pk"]
     return o, no_update, no_update
@@ -507,7 +614,6 @@ def handle_retract(btn_clicks, cancel, submit, o):
     if t in ("retract-cancel", "retract-submit"):
         return False, "", None
     if isinstance(t, dict) and t.get("type") == "btn-retract":
-        # 実際にクリックされたか確認
         if any(c for c in btn_clicks if c):
             return True, f"対象: {t['pk']}", t["pk"]
     return o, no_update, no_update

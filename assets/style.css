@@ -44,9 +44,11 @@
   --color-amber-9: #e67700;
 
   --color-green-0: #ebfbee;
+  --color-green-1: #d3f9d8;
   --color-green-2: #b2f2bb;
   --color-green-7: #37b24d;
   --color-green-8: #2f9e44;
+  --color-green-9: #2b8a3e;
 
   /* Spacing */
   --space-xs: 4px;
@@ -240,6 +242,113 @@
 
 .section-card__body {
   padding: var(--space-lg);
+}
+
+
+/* ========================================
+   Components - Check Summary (NEW)
+   ======================================== */
+.check-summary {
+  background: white;
+  border: 2px solid var(--color-gray-3);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.check-summary--ok {
+  border-color: var(--color-green-2);
+  background: linear-gradient(to right, var(--color-green-0), white);
+}
+
+.check-summary--attention {
+  border-color: var(--color-amber-2);
+  background: linear-gradient(to right, var(--color-amber-0), white);
+}
+
+.check-summary__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-gray-2);
+}
+
+.check-summary__header-icon {
+  font-size: 18px;
+}
+
+.check-summary__header-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-gray-9);
+}
+
+.check-summary__status {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.check-summary__status--ok {
+  background: var(--color-green-1);
+  color: var(--color-green-9);
+}
+
+.check-summary__status--attention {
+  background: var(--color-amber-0);
+  color: var(--color-amber-9);
+}
+
+.check-summary__body {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.check-summary__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+}
+
+.check-summary__item--warn {
+  background: var(--color-amber-0);
+  margin: var(--space-xs) calc(-1 * var(--space-lg));
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 0;
+}
+
+.check-summary__icon {
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.check-summary__icon--ok {
+  color: var(--color-green-7);
+}
+
+.check-summary__icon--warn {
+  color: var(--color-amber-8);
+}
+
+.check-summary__label {
+  font-size: var(--font-size-md);
+  color: var(--color-gray-7);
+}
+
+.check-summary__label--warn {
+  color: var(--color-amber-9);
+  font-weight: 500;
+}
+
+.check-summary__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+  margin-left: var(--space-sm);
 }
 
 
@@ -641,4 +750,434 @@
 
 .table-row-hover td {
   border-top: 1px solid var(--color-gray-3);
+}
+
+
+/* ========================================
+   Queue Layout (v2)
+   ======================================== */
+.queue-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-gray-1);
+}
+
+.queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  background: white;
+  border-bottom: 1px solid var(--color-gray-3);
+  position: sticky;
+  top: 60px; /* AppShell header height */
+  z-index: var(--z-sticky);
+}
+
+.queue-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.queue-header__icon {
+  font-size: 20px;
+}
+
+.queue-header__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-9);
+}
+
+.queue-header__right {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.queue-header__remaining-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.queue-header__remaining-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-blue-7);
+}
+
+/* ========================================
+   Change Summary Bar
+   ======================================== */
+.change-summary-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-gray-0);
+  border-bottom: 1px solid var(--color-gray-3);
+}
+
+.change-summary__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.change-summary__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-8);
+}
+
+.change-summary__date {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.change-summary__detail-btn {
+  font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   Record Panels (Left-Right Layout)
+   ======================================== */
+.record-panels {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.record-panel {
+  background: white;
+  border: 1px solid var(--color-gray-3);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.record-panel--left {
+  flex: 0 0 40%;
+  min-width: 300px;
+}
+
+.record-panel--right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+}
+
+.record-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-gray-3);
+  background: var(--color-gray-0);
+}
+
+.record-panel__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-gray-9);
+}
+
+.record-panel__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.record-panel__scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+}
+
+.record-panel__empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-gray-5);
+  font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   Record Card (Representative)
+   ======================================== */
+.record-card {
+  padding: var(--space-lg);
+}
+
+.record-card--representative {
+  /* 代表レコードの特別なスタイル */
+}
+
+.record-card__badges {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.record-card__score {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.record-card__reason {
+  margin-top: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+/* ========================================
+   Other Record Card
+   ======================================== */
+.other-record-card {
+  padding: var(--space-md);
+  border: 1px solid var(--color-gray-3);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  background: white;
+  transition: all 0.15s ease;
+}
+
+.other-record-card:last-child {
+  margin-bottom: 0;
+}
+
+.other-record-card--new {
+  border-color: var(--color-green-2);
+  background: linear-gradient(to right, var(--color-green-0), white);
+}
+
+.other-record-card--constrained {
+  border-color: var(--color-gray-3);
+  background: var(--color-gray-0);
+  opacity: 0.7;
+}
+
+.other-record-card__status {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.other-record-card__preview {
+  margin-bottom: var(--space-sm);
+}
+
+.other-record-card__name {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-gray-9);
+}
+
+.other-record-card__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-6);
+}
+
+.other-record-card__matches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.other-record-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.other-record-card__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-5);
+}
+
+.other-record-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-container {
+  flex: 1;
+  padding: var(--space-xl);
+  padding-bottom: 120px; /* アクションバー分 */
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.task-content {
+  /* タスク内容のラッパー */
+}
+
+
+/* ========================================
+   Record Panels (Left/Right Split)
+   ======================================== */
+.record-panels {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.record-panels__left {
+  width: 40%;
+  min-width: 40%;
+  flex: 0 0 40%;
+  position: sticky;
+  top: 80px;
+}
+
+.record-panels__right {
+  width: 60%;
+  min-width: 60%;
+  flex: 0 0 60%;
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+}
+
+.representative-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.section-card--representative {
+  /* 代表レコードセクションの特別なスタイル */
+}
+
+.section-card--merged {
+  background: var(--color-gray-0);
+}
+
+
+/* ========================================
+   Merged Values Section
+   ======================================== */
+.merged-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.merged-value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.merged-value__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-6);
+}
+
+.merged-value__value {
+  font-size: var(--font-size-base);
+  color: var(--color-gray-9);
+  font-weight: 500;
+}
+
+
+/* ========================================
+   Merged Value Edit Modal
+   ======================================== */
+.merged-edit__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.merged-edit__attr-group {
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-gray-2);
+}
+
+.merged-edit__attr-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.merged-edit__attr-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-gray-8);
+  margin-bottom: var(--space-sm);
+}
+
+
+/* ========================================
+   Other Records List
+   ======================================== */
+.other-records-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+
+/* ========================================
+   Action Bar (v2)
+   ======================================== */
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--color-gray-3);
+  padding: var(--space-lg) var(--space-xl);
+  z-index: var(--z-sticky);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.action-bar__buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.action-bar__btn {
+  flex: 1;
+  min-width: 140px;
+}
+
+.action-bar__btn--primary {
+  /* 確定ボタンの強調 */
+}
+
+
+/* ========================================
+   Empty State
+   ======================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px var(--space-xl);
+  text-align: center;
+}
+
+.empty-state__icon {
+  font-size: 64px;
+  margin-bottom: var(--space-lg);
+}
+
+.empty-state__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-9);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-state__sub {
+  font-size: var(--font-size-base);
+  color: var(--color-gray-6);
 }

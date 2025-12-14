@@ -26,6 +26,18 @@ def create_sidebar():
                     href="/batch",
                     className="app-navlink",
                 ),
+                dmc.NavLink(
+                    label="レビュー (v1)",
+                    icon=DashIconify(icon="tabler:checklist"),
+                    href="/review",
+                    className="app-navlink",
+                ),
+                dmc.NavLink(
+                    label="レビュー (v2)",
+                    icon=DashIconify(icon="tabler:player-play"),
+                    href="/review-v2",
+                    className="app-navlink",
+                ),
             ],
         ),
     )
