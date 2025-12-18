@@ -13,6 +13,17 @@ import dash_mantine_components as dmc
 dash.register_page(__name__, path="/single_v3")
 
 
+COLUMN_DEFS = {
+    "is_new": {"label": "", "fixed": True, "w": 30, "ta": "center"},
+    "id": {"label": "ID", "fixed": True, "w": 90, "ta": "center"},
+    "updated_at": {"label": "更新日時", "fixed": True, "w": 150, "ta": "center"},
+    "score": {"label": "スコア", "fixed": True, "w": 60, "ta": "center"},
+    "actions": {"label": "", "fixed": True, "w": 60, "ta": "center"},
+    "name": {"label": "氏名", "fixed": False, "ta": "left", "style": {"flex": "1 0 0"}},
+    "address": {"label": "住所", "fixed": False, "ta": "left", "style": {"flex": "3 0 0"}},
+    "phone": {"label": "電話番号", "fixed": False, "ta": "left", "style": {"flex": "1 0 0"}},
+}
+
 # -----------------------------
 # 小物コンポーネント
 # -----------------------------
@@ -66,11 +77,9 @@ def row_frame(fixed, flexible, show_flexible: bool = True):
         className="row",
         children=[
             dmc.Group(
-                grow=False,
                 children=fixed,
             ),
             dmc.Group(
-                grow=True,
                 style={"flex": 1},
                 children=flexible if show_flexible else [],
             ),
@@ -78,18 +87,25 @@ def row_frame(fixed, flexible, show_flexible: bool = True):
     )
 
 
-def header_row(kbn, upd, *col_flexible, show_flexible: bool = True):
+def dmc_props(col_def):
+    control_keys = {"label", "fixed"}
+    return {k: v for k, v in col_def.items() if k not in control_keys}
+
+def header_row(column_defs, show_flexible = True):
     return row_frame(
         fixed=[
-            header_cell(label=kbn, w=60),
-            header_cell(label=upd, w=120),
+            header_cell(label=col["label"], **dmc_props(col))
+            for col in column_defs.values() if col["fixed"]
         ],
-        flexible=[header_cell(label=v) for v in col_flexible],
+        flexible=[
+            header_cell(label=col["label"], **dmc_props(col))
+            for col in column_defs.values() if not col["fixed"]
+        ],
         show_flexible=show_flexible,
     )
 
 
-def data_row(record: dict, show_flexible: bool = True):
+def data_row(column_defs, record, show_flexible = True):
     cell_style = {
         "whiteSpace": "normal",
         "wordBreak": "break-word",
@@ -97,71 +113,78 @@ def data_row(record: dict, show_flexible: bool = True):
     }
     return row_frame(
         fixed=[
-            value_cell_text(val=record["kbn"], w=60, ta="center"),
-            value_cell_text(val=record["upd"], w=120, ta="center"),
+            value_cell_text(val=record["is_new"], **dmc_props(column_defs["is_new"])),
+            value_cell_text(val=record["id"], **dmc_props(column_defs["id"])),
+            value_cell_text(val=record["updated_at"], **dmc_props(column_defs["updated_at"])),
+            value_cell_text(val=record["score"], **dmc_props(column_defs["score"])),
+            value_cell_text(val="", **dmc_props(column_defs["actions"])),
         ],
         flexible=[
-            value_cell_text(val=v, style=cell_style)
-            for k, v in record.items()
-            if k not in {"kbn", "upd"}
+            value_cell_text(record.get(key), **dmc_props(col))
+            for key, col in column_defs.items() if not col["fixed"]
         ],
         show_flexible=show_flexible,
     )
 
-
-def baseline_section(records, show_flexible: bool = True):
+def baseline_section(column_defs, records, show_flexible: bool = True):
     return dmc.Stack(
         className="baseline_section",
         children=[
-            data_row(r, show_flexible=show_flexible) for r in records
+            data_row(column_defs, r, show_flexible=show_flexible) for r in records
         ],
     )
 
-
-def comparisons_section(records, show_flexible: bool = True):
+def comparisons_section(column_defs, records, show_flexible: bool = True):
     return dmc.Stack(
         className="comparisons_section",
         children=[
-            data_row(r, show_flexible=show_flexible) for r in records
+            data_row(column_defs, r, show_flexible=show_flexible) for r in records
         ],
     )
 
-
-# -----------------------------
+# ========================================
 # ダミーデータ
-# -----------------------------
+# ========================================
 
 baseline_data = [
     {
-        "kbn": "a",
-        "upd": "b",
-        "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "address": "d",
-        "phone": "e",
-    },
+        "is_new": False,
+        "id": "rec-001",
+        "updated_at": "2025/11/12 14:22",
+        "score": "80",
+        "name": "佐々木 太郎",
+        "address": "東京都千代田区千代田1-1",
+        "phone": "+81-90-1234-5678",
+    }
 ]
 
 comparisons_data = [
     {
-        "kbn": "a",
-        "upd": "b",
-        "name": "c",
-        "address": "d",
-        "phone": "e",
+        "is_new": True,
+        "id": "rec-002",
+        "updated_at": "2025/11/14 09:00",
+        "score": "80",
+        "name": "佐々木 太郎",
+        "address": "東京都千代田区千代田1-1",
+        "phone": "+81-90-1111-2222",
     },
     {
-        "kbn": "a",
-        "upd": "b",
-        "name": "c",
-        "address": "d",
-        "phone": "e",
+        "is_new": False,
+        "id": "rec-003",
+        "updated_at": "2025/11/10 10:05",
+        "score": "80",
+        "name": "佐々木 太郎",
+        "address": "東京都中央区銀座1-1",
+        "phone": "+81-90-1234-5678",
     },
     {
-        "kbn": "a",
-        "upd": "b",
-        "name": "c",
-        "address": "d",
-        "phone": "e",
+        "is_new": False,
+        "id": "rec-004",
+        "updated_at": "2025/11/11 15:30",
+        "score": "80",
+        "name": "ササキ タロウ",
+        "address": "東京都千代田区千代田1-1",
+        "phone": "+81-80-9999-8888",
     },
 ]
 
@@ -178,14 +201,11 @@ def build_contents(show_flexible: bool):
     return dmc.Stack(
         className="stack",
         children=[
-            header_row(
-                "区分", "更新日時", "氏名", "住所", "電話番号",
-                show_flexible=show_flexible,
-            ),
+            header_row(COLUMN_DEFS, show_flexible=show_flexible,),
             labeled_divider("比較元レコード"),
-            baseline_section(baseline_data, show_flexible=show_flexible),
+            baseline_section(COLUMN_DEFS, baseline_data, show_flexible=show_flexible),
             labeled_divider("比較先レコード"),
-            comparisons_section(comparisons_data, show_flexible=show_flexible),
+            comparisons_section(COLUMN_DEFS, comparisons_data, show_flexible=show_flexible),
         ],
     )
 
