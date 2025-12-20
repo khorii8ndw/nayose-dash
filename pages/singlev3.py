@@ -24,6 +24,13 @@ COLUMN_DEFS = {
     "phone": {"label": "電話番号", "fixed": False, "ta": "left", "style": {"flex": "1 0 0"}},
 }
 
+def status_cell(row_data, **props):
+    if row_data["is_new"]:
+        return dmc.Badge("NEW", color="green", size="sm", variant="light", **props)
+    return dmc.Text("", **props)
+
+
+
 # -----------------------------
 # 小物コンポーネント
 # -----------------------------
@@ -32,14 +39,13 @@ def labeled_divider(label: str):
     return dmc.Group(
         align="center",
         children=[
-            dmc.Divider(style={"width": 30}),
+            dmc.Divider(style={"width": 45}),
             dmc.Text(label, size="sm"),
             dmc.Divider(style={"flex": 10}),
         ],
     )
 
-
-def header_cell(label, **text_props):
+def header_cell(label, **props):
     default = {
         "className": "header_cell",
         "size": "sm",
@@ -47,11 +53,53 @@ def header_cell(label, **text_props):
     }
     return dmc.Text(
         label,
-        **{**default, **text_props},
+        **{**default, **props},
     )
 
 
-def value_cell_text(val, **text_props):
+
+def score_cell(row_data, **props):
+    if row_data["is_baseline"]:
+        return dmc.Text("—", size="sm")
+    score = row_data["pair_info"].get("score") if row_data.get("pair_info") else None
+    return dmc.Text(f"{score:.2f}" if score else "—", size="sm", **props)
+
+
+def build_action_menu(record_id, pair_info, is_baseline, **props):
+    """アクションメニュー"""
+    #has_cannot = pair_info.get("cannot") is not None if pair_info else False
+    
+    #if has_cannot:
+    #    menu_items = [
+    #        dmc.MenuItem("スコア詳細", id={"type": "menu-score", "id": record_id}),
+    #        dmc.MenuItem("比較元に変更", id={"type": "menu-baseline", "id": record_id}, disabled=True),
+    #        dmc.MenuItem("cannot解除", id={"type": "menu-cannot-remove", "id": record_id}),
+    #    ]
+    #else:
+    menu_items = [
+        dmc.MenuItem("スコア詳細", id={"type": "menu-score", "id": record_id}),
+        dmc.MenuItem("比較元に変更", id={"type": "menu-baseline", "id": record_id}),
+        dmc.MenuItem("cannot設定", id={"type": "menu-cannot-add", "id": record_id}),
+
+    ]
+    
+    return dmc.Menu([
+        dmc.MenuTarget(dmc.ActionIcon(dmc.Text("⋮"), variant="subtle", size="sm", **props)),
+        dmc.MenuDropdown(menu_items),
+    ])
+
+def action_cell(row_data, **props):
+    return build_action_menu(row_data["record_id"], row_data.get("pair_info"), row_data.get("is_baseline", False), **props)
+
+
+def text_cell(key):
+    def _render(row_data, **props):
+        return dmc.Text(row_data.get(key) or "—", size="sm", **props)
+    return _render
+
+
+
+def _texe_cell(val, **text_props):
     default = {
         "className": "value_cell_text",
         "size": "sm",
@@ -86,45 +134,56 @@ def row_frame(fixed, flexible, show_flexible: bool = True):
         ],
     )
 
-
-def dmc_props(col_def):
-    control_keys = {"label", "fixed"}
-    return {k: v for k, v in col_def.items() if k not in control_keys}
-
-def header_row(column_defs, show_flexible = True):
-    return row_frame(
-        fixed=[
-            header_cell(label=col["label"], **dmc_props(col))
-            for col in column_defs.values() if col["fixed"]
-        ],
-        flexible=[
-            header_cell(label=col["label"], **dmc_props(col))
-            for col in column_defs.values() if not col["fixed"]
-        ],
-        show_flexible=show_flexible,
-    )
+def header_row(config, show_flexible=True):
+    return row_frame(**{
+        k: [dmc.Text(col["label"], **col.get("props", {})) for col in cols]
+        for k, cols in config.items()
+    }, show_flexible=show_flexible)
 
 
-def data_row(column_defs, record, show_flexible = True):
-    cell_style = {
-        "whiteSpace": "normal",
-        "wordBreak": "break-word",
-        "minWidth": 0,
-    }
-    return row_frame(
-        fixed=[
-            value_cell_text(val=record["is_new"], **dmc_props(column_defs["is_new"])),
-            value_cell_text(val=record["id"], **dmc_props(column_defs["id"])),
-            value_cell_text(val=record["updated_at"], **dmc_props(column_defs["updated_at"])),
-            value_cell_text(val=record["score"], **dmc_props(column_defs["score"])),
-            value_cell_text(val="", **dmc_props(column_defs["actions"])),
-        ],
-        flexible=[
-            value_cell_text(record.get(key), **dmc_props(col))
-            for key, col in column_defs.items() if not col["fixed"]
-        ],
-        show_flexible=show_flexible,
-    )
+def data_row(config, row_data, show_flexible=True):
+    return row_frame(**{
+        k: [col["render"](row_data, **col.get("props", {})) for col in cols]
+        for k, cols in config.items()
+    }, show_flexible=show_flexible)
+
+#def dmc_props(col_def):
+#    control_keys = {"label", "fixed"}
+#    return {k: v for k, v in col_def.items() if k not in control_keys}
+
+#def _header_row(column_defs, show_flexible = True):
+#    return row_frame(
+#        fixed=[
+#            header_cell(label=col["label"], **dmc_props(col))
+#            for col in column_defs.values() if col["fixed"]
+#        ],
+#        flexible=[
+#            header_cell(label=col["label"], **dmc_props(col))
+#            for col in column_defs.values() if not col["fixed"]
+#        ],
+#        show_flexible=show_flexible,
+#    )
+
+#def _data_row(column_defs, record, show_flexible = True):
+#    cell_style = {
+#        "whiteSpace": "normal",
+#        "wordBreak": "break-word",
+#        "minWidth": 0,
+#    }
+#    return row_frame(
+#        fixed=[
+#            texe_cell(val=record["is_new"], **dmc_props(column_defs["is_new"])),
+#            texe_cell(val=record["id"], **dmc_props(column_defs["id"])),
+#            texe_cell(val=record["updated_at"], **dmc_props(column_defs["updated_at"])),
+#            texe_cell(val=record["score"], **dmc_props(column_defs["score"])),
+#            texe_cell(val="", **dmc_props(column_defs["actions"])),
+#        ],
+#        flexible=[
+#            texe_cell(record.get(key), **dmc_props(col))
+#            for key, col in column_defs.items() if not col["fixed"]
+#        ],
+#        show_flexible=show_flexible,
+#    )
 
 def baseline_section(column_defs, records, show_flexible: bool = True):
     return dmc.Stack(
@@ -149,7 +208,7 @@ def comparisons_section(column_defs, records, show_flexible: bool = True):
 baseline_data = [
     {
         "is_new": False,
-        "id": "rec-001",
+        "record_id": "rec-001",
         "updated_at": "2025/11/12 14:22",
         "score": "80",
         "name": "佐々木 太郎",
@@ -161,7 +220,7 @@ baseline_data = [
 comparisons_data = [
     {
         "is_new": True,
-        "id": "rec-002",
+        "record_id": "rec-002",
         "updated_at": "2025/11/14 09:00",
         "score": "80",
         "name": "佐々木 太郎",
@@ -170,7 +229,7 @@ comparisons_data = [
     },
     {
         "is_new": False,
-        "id": "rec-003",
+        "record_id": "rec-003",
         "updated_at": "2025/11/10 10:05",
         "score": "80",
         "name": "佐々木 太郎",
@@ -179,7 +238,7 @@ comparisons_data = [
     },
     {
         "is_new": False,
-        "id": "rec-004",
+        "record_id": "rec-004",
         "updated_at": "2025/11/11 15:30",
         "score": "80",
         "name": "ササキ タロウ",
@@ -201,28 +260,28 @@ def build_contents(show_flexible: bool):
     return dmc.Stack(
         className="stack",
         children=[
-            header_row(COLUMN_DEFS, show_flexible=show_flexible,),
+            header_row(load_config(""), show_flexible=show_flexible,),
             labeled_divider("比較元レコード"),
-            baseline_section(COLUMN_DEFS, baseline_data, show_flexible=show_flexible),
+            baseline_section(load_config(""), baseline_data, show_flexible=show_flexible),
             labeled_divider("比較先レコード"),
-            comparisons_section(COLUMN_DEFS, comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
         ],
     )
 
 
-def build_contents2():
+def build_contents2(show_flexible):
     """
     コンテンツ2（右側に出したい別の内容）。
     例として comparisons_section を複数並べておく。
     """
     return dmc.Stack(
         children=[
-            comparisons_section(comparisons_data),
-            comparisons_section(comparisons_data),
-            comparisons_section(comparisons_data),
-            comparisons_section(comparisons_data),
-            comparisons_section(comparisons_data),
-            comparisons_section(comparisons_data),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
+            comparisons_section(load_config(""), comparisons_data, show_flexible=show_flexible),
         ],
     )
 
@@ -264,6 +323,68 @@ def page_layout(
         ],
     )
 
+
+
+FIXED = [
+    {
+        "key": "is_new",
+        "label": "",
+        "render": status_cell,
+        "props": {"w": 45},
+    },
+    {
+        "key": "record_id",
+        "label": "ID",
+        "render": text_cell("record_id"),
+        "props": {"w": 75, "ta": "center"},
+    },
+    {
+        "key": "updated_at",
+        "label": "更新日時",
+        "render": text_cell("updated_at"),
+        "props": {"w": 120, "ta": "center"},
+    },
+    {
+        "key": "score",
+        "label": "スコア",
+        "render": text_cell("score"),
+        "props": {"w": 60, "ta": "center"},
+    },
+    {
+        "key": "action",
+        "label": "",
+        "render": action_cell,
+        "props": {"w": 60, "ta": "left"},
+    },
+]
+
+FLEXIBLE = [
+    {
+        "key": "name",
+        "label": "氏名",
+        "render": text_cell("name"),
+        "props": {"ta": "left", "style": {"flex": "3 0 0"}},
+    },
+    {
+        "key": "address",
+        "label": "住所",
+        "render": text_cell("address"),
+        "props": {"ta": "left", "style": {"flex": "6 0 0"}},
+    },
+    {
+        "key": "phone",
+        "label": "電話番号",
+        "render": text_cell("phone"),
+        "props": {"ta": "left", "style": {"flex": "3 0 0"}},
+    },
+]
+
+def load_config(table_name):
+    #table = importlib.import_module(f"configs.{table_name}")
+    return {
+        "fixed": FIXED,
+        "flexible": FLEXIBLE,
+    }
 
 # -----------------------------
 # layout 本体
@@ -308,7 +429,7 @@ def update_single_v3_middle(show_alt: bool):
                 ),
                 dmc.Col(
                     span=8,
-                    children=build_contents2(),
+                    children=build_contents2(show_flexible=False),
                 ),
             ],
         )
