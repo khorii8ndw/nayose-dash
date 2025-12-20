@@ -95,6 +95,7 @@ def data_row(config, row_data, show_flexible=True):
     return row_frame(fixed_cells, flexible_cells, show_flexible=show_flexible)
 
 
+
 # --- セクション ---
 
 def baseline_section(config, records, show_flexible: bool = True):
@@ -110,6 +111,28 @@ def comparisons_section(config, records, show_flexible: bool = True):
     return dmc.Stack(
         className="rr-section rr-section--comparisons",
         children=[data_row(config, r, show_flexible=show_flexible) for r in records],
+    )
+
+
+# --- フッター ---
+def review_action_buttons():
+    """レビュー用アクションボタン（右寄せ）"""
+    return dmc.Group(
+        position="right",
+        spacing="sm",
+        children=[
+            dmc.Button(
+                "保留",
+                id="rr-btn-hold",
+                variant="outline",
+                color="gray",
+            ),
+            dmc.Button(
+                "承認",
+                id="rr-btn-approve",
+                color="blue",
+            ),
+        ],
     )
 
 
@@ -151,21 +174,57 @@ def build_detail_panel(show_flexible: bool):
 # レイアウト定義
 # ========================================
 
+header = dmc.Stack(
+    spacing="xs",
+    children=[
+        # 1行目：タイトル + スイッチ
+        dmc.Group(
+            position="apart",
+            children=[
+                dmc.Title("レコードレビュー", order=2),
+                dmc.Switch(
+                    id="rr-toggle-detail",
+                    label="詳細パネルを表示",
+                    size="sm",
+                ),
+            ],
+        ),
+
+        # 2行目：作業コンテキスト
+        dmc.Text(
+            "users_master を名寄せ中 · 残り 123 件",
+            size="sm",
+            c="dimmed",
+        ),
+    ],
+)
+
+footer = dmc.Stack(
+    className="rr-footer",
+    spacing="sm",
+    children=[
+        dmc.Divider(),
+        review_action_buttons(),
+    ],
+)
+
 layout = page_layout(
-    top=dmc.Group(
-        position="apart",
-        children=[
-            dmc.Title("レコードレビュー", order=2),
-            dmc.Switch(
-                id="rr-toggle-detail",
-                label="詳細パネルを表示",
-                size="sm",
-                checked=False,
-            ),
-        ],
-    ),
+    header,
+    #top=dmc.Group(
+    #    position="apart",
+    #    children=[
+    #        dmc.Title("レコードレビュー", order=2),
+    #        dmc.Switch(
+    #            id="rr-toggle-detail",
+    #            label="詳細パネルを表示",
+    #            size="sm",
+    #            checked=False,
+    #        ),
+    #    ],
+    #),
     middle=dmc.Stack(id="rr-main-content"),
-    bottom=dmc.Title("フッター", order=2),
+    #bottom=dmc.Title("フッター", order=2),
+    bottom=footer,
 )
 
 
