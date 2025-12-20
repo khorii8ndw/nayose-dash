@@ -6,7 +6,7 @@
 
 import dash_mantine_components as dmc
 
-def page_layout(top, middle, bottom, *, py: str = "xl"):
+def page_layout(top, middle, bottom, *, py: str = "xl", px: str = "xl"):
     """
     ページ共通レイアウト
     - top: ヘッダー部分
@@ -16,6 +16,7 @@ def page_layout(top, middle, bottom, *, py: str = "xl"):
     return dmc.Stack(
         className="page-root",
         py=py,
+        px=px,
         children=[
             dmc.Stack(
                 className="page-stack",

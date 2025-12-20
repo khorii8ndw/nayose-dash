@@ -23,19 +23,19 @@ dash.register_page(__name__, path="/record-review")
 # ========================================
 
 # --- 小物コンポーネント ---
-
-def labeled_divider(label: str):
+def labeled_divider(label: str, **props):
     """ラベル付きディバイダー"""
     return dmc.Group(
         className="rr-divider",
         align="center",
+        #my="xs",
+        **props,
         children=[
             dmc.Divider(style={"width": 45}),
             dmc.Text(label, size="sm", className="rr-divider__label"),
             dmc.Divider(style={"flex": 10}),
         ],
     )
-
 
 def header_cell(label, **props):
     """ヘッダーセル"""
@@ -46,9 +46,7 @@ def header_cell(label, **props):
     }
     return dmc.Text(label, **{**default, **props})
 
-
 # --- 行構造 ---
-
 def row_frame(fixed, flexible, show_flexible: bool = True):
     """
     1行分の枠。
@@ -58,6 +56,7 @@ def row_frame(fixed, flexible, show_flexible: bool = True):
     """
     return dmc.Group(
         className="rr-table__row",
+        py="md",
         children=[
             dmc.Group(className="rr-table__row-fixed", children=fixed),
             dmc.Group(
@@ -151,13 +150,13 @@ def build_main_table(show_flexible: bool):
             header_row(config, show_flexible=show_flexible),
             labeled_divider("比較元レコード"),
             baseline_section(config, baseline_data, show_flexible=show_flexible),
-            labeled_divider("比較先レコード"),
+            labeled_divider("比較先レコード", mt="xl"),
             comparisons_section(config, comparisons_data, show_flexible=show_flexible),
         ],
     )
 
 
-def build_detail_panel(show_flexible: bool):
+def _build_detail_panel(show_flexible: bool):
     """詳細パネルを生成（右側パネル用）"""
     config = get_config()
     comparisons_data = get_comparisons_data()
@@ -170,32 +169,134 @@ def build_detail_panel(show_flexible: bool):
     )
 
 
+def build_detail_panel(show_flexible: bool):
+    """詳細パネル：代表値選択"""
+    return dmc.Stack(
+        className="rr-detail-panel",
+        spacing="md",
+        px="xl",
+        children=[
+            #dmc.Text("代表値の選択", fw=600, size="sm"),
+            #dmc.Text("各項目の代表値を選択してください。デフォルトは最新レコードの値です。", size="xs", c="dimmed"),
+            
+            dmc.Select(
+                label="氏名",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "佐々木 太郎 (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "佐々木 太郎 (rec-001)"},
+                    {"value": "rec-004", "label": "ササキ タロウ (rec-004)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="カナ",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "ササキ タロウ (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "ササキ タロウ (rec-001)"},
+                    {"value": "rec-004", "label": "ササキ タロウ (rec-004)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="住所",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "東京都千代田区千代田1-1 (rec-002, 最新)"},
+                    {"value": "rec-003", "label": "東京都中央区銀座1-1 (rec-003)"},
+                    {"value": "rec-001", "label": "東京都千代田区千代田1-1 (rec-001)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="電話番号",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "+81-90-1111-2222 (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "+81-90-1234-5678 (rec-001)"},
+                    {"value": "rec-004", "label": "+81-80-9999-8888 (rec-004)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="メールアドレス",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "sasaki3@example.com (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "sasaki@example.com (rec-001)"},
+                    {"value": "rec-003", "label": "sasaki.taro@example.com (rec-003)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="生年月日",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "1985/03/15 (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "1985/03/15 (rec-001)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+            
+            dmc.Select(
+                label="性別",
+                value="rec-002",
+                data=[
+                    {"value": "rec-002", "label": "男性 (rec-002, 最新)"},
+                    {"value": "rec-001", "label": "男性 (rec-001)"},
+                ],
+                searchable=True,
+                creatable=True,
+            ),
+        ],
+    )
+
 # ========================================
 # レイアウト定義
 # ========================================
-
-header = dmc.Stack(
-    spacing="xs",
+header = dmc.Group(
+    position="apart",
     children=[
-        # 1行目：タイトル + スイッチ
+        dmc.Title("レコードレビュー：users_master", order=3),
         dmc.Group(
-            position="apart",
+            spacing="xs",
             children=[
-                dmc.Title("レコードレビュー", order=2),
+                dmc.Text("残り", size="sm", c="dimmed"),
+                dmc.Text("123", size="lg", fw=700, c="blue"),
+                dmc.Text("件", size="sm", c="dimmed"),
+            ],
+        ),
+    ],
+)
+
+middle=dmc.Stack(
+    mt="md",
+    px="xl",
+    children=[
+        dmc.Group(
+            position="right",
+            children=[
                 dmc.Switch(
                     id="rr-toggle-detail",
-                    label="詳細パネルを表示",
+                    label="代表値選択",
                     size="sm",
+                    checked=False,
                 ),
             ],
         ),
-
-        # 2行目：作業コンテキスト
-        dmc.Text(
-            "users_master を名寄せ中 · 残り 123 件",
-            size="sm",
-            c="dimmed",
-        ),
+        dmc.Stack(id="rr-main-content"),
     ],
 )
 
@@ -203,27 +304,14 @@ footer = dmc.Stack(
     className="rr-footer",
     spacing="sm",
     children=[
-        dmc.Divider(),
+        dmc.Divider(my="sm"),
         review_action_buttons(),
     ],
 )
 
 layout = page_layout(
     header,
-    #top=dmc.Group(
-    #    position="apart",
-    #    children=[
-    #        dmc.Title("レコードレビュー", order=2),
-    #        dmc.Switch(
-    #            id="rr-toggle-detail",
-    #            label="詳細パネルを表示",
-    #            size="sm",
-    #            checked=False,
-    #        ),
-    #    ],
-    #),
-    middle=dmc.Stack(id="rr-main-content"),
-    #bottom=dmc.Title("フッター", order=2),
+    middle=middle,
     bottom=footer,
 )
 
@@ -242,8 +330,8 @@ def update_rr_main_content(show_detail: bool):
         return dmc.Grid(
             gutter=0,
             children=[
-                dmc.Col(span=4, children=build_main_table(show_flexible=False)),
-                dmc.Col(span=8, children=build_detail_panel(show_flexible=False)),
+                dmc.Col(span=5, children=build_main_table(show_flexible=False)),
+                dmc.Col(span=5, children=build_detail_panel(show_flexible=False)),
             ],
         )
     return build_main_table(show_flexible=True)

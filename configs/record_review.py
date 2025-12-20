@@ -11,7 +11,6 @@ import dash_mantine_components as dmc
 # ========================================
 # セルレンダラー
 # ========================================
-
 def status_cell(row_data, **props):
     """NEW バッジを表示"""
     if row_data.get("is_new"):
@@ -24,7 +23,6 @@ def status_cell(row_data, **props):
             **props,
         )
     return dmc.Text("", className="rr-table__cell rr-table__cell--status", **props)
-
 
 def score_cell(row_data, **props):
     """スコアを表示（比較元の場合は "—"）"""
@@ -43,7 +41,6 @@ def score_cell(row_data, **props):
         **props,
     )
 
-
 def text_cell(key):
     """テキストセルのレンダラーを生成"""
     def _render(row_data, **props):
@@ -54,7 +51,6 @@ def text_cell(key):
             **props,
         )
     return _render
-
 
 def action_cell(row_data, **props):
     """アクションメニューを表示"""
@@ -77,11 +73,9 @@ def action_cell(row_data, **props):
         dmc.MenuDropdown(menu_items),
     ])
 
-
 # ========================================
 # 列定義
 # ========================================
-
 FIXED_COLUMNS = [
     {
         "key": "is_new",
@@ -111,7 +105,7 @@ FIXED_COLUMNS = [
         "key": "action",
         "label": "",
         "render": action_cell,
-        "props": {"w": 60, "ta": "left"},
+        "props": {"w": 60, "ta": "center"},
     },
 ]
 
@@ -136,11 +130,9 @@ FLEXIBLE_COLUMNS = [
     },
 ]
 
-
 # ========================================
 # 設定取得関数
 # ========================================
-
 def get_config():
     """列定義を取得"""
     return {
